@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark download panel - app</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+        }
+
+        .note {
+            color: #52525b;
+            font-size: 13px;
+            margin-bottom: 16px;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        .note code {
+            background: rgba(99,102,241,0.1);
+            color: #a5b4fc;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .banner {
+            width: 1080px;
+            height: 1080px;
+            background: #09090b;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 0 80px rgba(99, 102, 241, 0.15), 0 0 200px rgba(99, 102, 241, 0.05);
+        }
+
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        .orb1 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2), transparent 70%);
+            top: -100px;
+            right: -100px;
+            animation: float1 8s ease-in-out infinite;
+        }
+        .orb2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15), transparent 70%);
+            bottom: -50px;
+            left: -100px;
+            animation: float2 10s ease-in-out infinite;
+        }
+        .orb3 {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1), transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: float3 6s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 30px); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 8px 20px;
+            border-radius: 100px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: #6366f1;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(99,102,241,0); }
+        }
+        .badge-text {
+            color: #a5b4fc;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .logo-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 36px;
+            box-shadow: 0 0 60px rgba(99, 102, 241, 0.3), 0 20px 60px rgba(99, 102, 241, 0.2);
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+            position: relative;
+        }
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #6366f1);
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+        }
+        .logo-icon .iconify {
+            font-size: 48px;
+            color: white;
+        }
+
+        .title {
+            font-size: 72px;
+            font-weight: 900;
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 12px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+        .title-dark {
+            color: #ffffff;
+        }
+        .title-accent {
+            background: linear-gradient(135deg, #6366f1, #a78bfa, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #71717a;
+            font-size: 20px;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+            letter-spacing: 0.02em;
+        }
+
+        .services {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        /* --- LINK CARDS --- */
+        .service-link {
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s;
+        }
+        .service-link:hover {
+            transform: translateY(-4px);
+        }
+        .service-link:hover .service-card {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+        }
+        .service-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .service-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .service-icon.instagram { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .service-icon.youtube { background: #ff0000; }
+        .service-icon.telegram { background: #0088cc; }
+        .service-icon.tiktok { background: #010101; border: 1px solid rgba(255,255,255,0.1); }
+        .service-icon.twitter { background: #000000; border: 1px solid rgba(255,255,255,0.15); }
+        .service-icon .iconify {
+            font-size: 22px;
+            color: white;
+        }
+        .service-name {
+            color: #d4d4d8;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .service-desc {
+            color: #52525b;
+            font-size: 11px;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+        .stat { text-align: center; }
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .stat-value span {
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label {
+            color: #52525b;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+        }
+        .stat-divider {
+            width: 1px;
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* --- CTA LINK --- */
+        .cta-link {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 18px 48px;
+            border-radius: 16px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), 0 10px 40px rgba(99, 102, 241, 0.2);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .cta-link:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 0 60px rgba(99, 102, 241, 0.4), 0 15px 50px rgba(99, 102, 241, 0.3);
+        }
+        .cta-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            filter: blur(20px);
+            opacity: 0.4;
+            z-index: -1;
+        }
+        .cta-link .iconify {
+            font-size: 20px;
+        }
+
+        .tagline {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #3f3f46;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .deco-line-left {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, rgba(99,102,241,0.3), transparent);
+            border-radius: 10px;
+        }
+        .deco-line-right {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, rgba(139,92,246,0.3), transparent);
+            border-radius: 10px;
+        }
+        .deco-corner-tl {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 40px;
+            height: 40px;
+            border-top: 2px solid rgba(99,102,241,0.2);
+            border-left: 2px solid rgba(99,102,241,0.2);
+            border-radius: 4px 0 0 0;
+        }
+        .deco-corner-br {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 40px;
+            height: 40px;
+            border-bottom: 2px solid rgba(139,92,246,0.2);
+            border-right: 2px solid rgba(139,92,246,0.2);
+            border-radius: 0 0 4px 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 50%;
+        }
+        .p1 { top: 15%; left: 20%; animation: float-particle 7s ease-in-out infinite; }
+        .p2 { top: 25%; right: 15%; animation: float-particle 9s ease-in-out infinite 1s; width: 3px; height: 3px; }
+        .p3 { bottom: 30%; left: 10%; animation: float-particle 8s ease-in-out infinite 2s; width: 5px; height: 5px; background: rgba(139,92,246,0.3); }
+        .p4 { top: 40%; right: 8%; animation: float-particle 6s ease-in-out infinite 0.5s; }
+        .p5 { bottom: 20%; right: 25%; animation: float-particle 10s ease-in-out infinite 3s; width: 3px; height: 3px; background: rgba(139,92,246,0.4); }
+        .p6 { top: 60%; left: 5%; animation: float-particle 8s ease-in-out infinite 1.5s; width: 2px; height: 2px; }
+        .p7 { top: 10%; left: 45%; animation: float-particle 7s ease-in-out infinite 2.5s; width: 3px; height: 3px; background: rgba(59,130,246,0.3); }
+        .p8 { bottom: 15%; left: 40%; animation: float-particle 9s ease-in-out infinite 0.8s; width: 4px; height: 4px; background: rgba(59,130,246,0.25); }
+
+        @keyframes float-particle {
+            0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+            25% { transform: translate(10px, -15px); opacity: 0.8; }
+            50% { transform: translate(-5px, -25px); opacity: 0.3; }
+            75% { transform: translate(15px, -10px); opacity: 0.7; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1120px) {
+            .banner {
+                width: 90vw;
+                height: 90vw;
+                max-width: 1080px;
+                max-height: 1080px;
+            }
+            .title { font-size: 5.5vw; }
+            .subtitle { font-size: 1.8vw; }
+            .services { gap: 1vw; flex-wrap: wrap; justify-content: center; }
+            .service-card { padding: 1.5vw 2vw; }
+            .service-name { font-size: 1.2vw; }
+            .service-desc { font-size: 0.9vw; }
+            .service-icon { width: 3.5vw; height: 3.5vw; }
+            .service-icon .iconify { font-size: 1.8vw; }
+            .stats { gap: 3vw; }
+            .stat-value { font-size: 3vw; }
+            .stat-label { font-size: 1vw; }
+            .logo-icon { width: 8vw; height: 8vw; border-radius: 2vw; }
+            .logo-icon .iconify { font-size: 4vw; }
+            .cta-link { padding: 1.5vw 3.5vw; font-size: 1.3vw; }
+            .badge { padding: 0.6vw 1.5vw; }
+            .badge-text { font-size: 1vw; }
+            .content { padding: 4vw; }
+            .tagline { bottom: 3vw; font-size: 0.9vw; }
+        }
+
+        @media (max-width: 600px) {
+            .services { flex-wrap: wrap; justify-content: center; }
+            .stats { flex-wrap: wrap; justify-content: center; gap: 20px; }
+            .stat-divider { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <p class="note">
+        ⚠️ WELCOME TO OUR WEBSITE
+    </p>
+
+    <button class="download-btn" onclick="downloadBanner()">
+        <span class="iconify" data-icon="mdi:download"></span>
+        DOWNLOAD APK
+    </button>
+
+    <div class="banner" id="banner">
+        <div class="grid-bg"></div>
+        <div class="orb1"></div>
+        <div class="orb2"></div>
+        <div class="orb3"></div>
+
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+        <div class="particle p6"></div>
+        <div class="particle p7"></div>
+        <div class="particle p8"></div>
+
+        <div class="deco-corner-tl"></div>
+        <div class="deco-corner-br"></div>
+        <div class="deco-line-left"></div>
+        <div class="deco-line-right"></div>
+
+        <div class="content">
+            <div class="badge">
+                <div class="badge-dot"></div>
+                <span class="badge-text">Telegram Bot • SMM Panel</span>
+            </div>
+
+            <div class="logo-icon">
+                <span class="iconify" data-icon="mdi:lightning-bolt"></span>
+            </div>
+
+            <h1 class="title">
+                <span class="title-dark">DARK</span><br>
+                <span class="title-accent">DOWNLOAD SITE</span>
+            </h1>
+
+            <p class="subtitle">Premium Social Media Marketing Services</p>
+
+            <!-- ✅ SABME LINKS HAI — YOUR_LINK replace karo apne se -->
+            <div class="services">
+
+                <a href="https://www.instagram.com/__alone__boy__2009________?igsh=MWR1eHZ4aGZvemhkNA==" target="_blank" class="service-link">
+                    <div class="service-card">
+                        <div class="service-icon instagram">
+                            <span class="iconify" data-icon="mdi:instagram"></span>
+                        </div>
+                        <div>
+                            <div class="service-name">Instagram</div>
+                            <div class="service-desc">Followers • Likes • Views</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://youtube.com/@p.pgaming2.0?si=mNJu6v_8PEXOOFvX" target="_blank" class="service-link">
+                    <div class="service-card">
+                        <div class="service-icon youtube">
+                            <span class="iconify" data-icon="mdi:youtube"></span>
+                        </div>
+                        <div>
+                            <div class="service-name">YouTube</div>
+                            <div class="service-desc">Subs • Views • Watch</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://t.me/darkkotp" target="_blank" class="service-link">
+                    <div class="service-card">
+                        <div class="service-icon telegram">
+                            <span class="iconify" data-icon="mdi:telegram"></span>
+                        </div>
+                        <div>
+                            <div class="service-name">Telegram</div>
+                            <div class="service-desc">Members • Views</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="YOUR_LINK" target="_blank" class="service-link">
+                    <div class="service-card">
+                        <div class="service-icon tiktok">
+                            <span class="iconify" data-icon="ic:baseline-tiktok"></span>
+                        </div>
+                        <div>
+                            <div class="service-name">TikTok</div>
+                            <div class="service-desc">Followers • Likes</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="YOUR_LINK" target="_blank" class="service-link">
+                    <div class="service-card">
+                        <div class="service-icon twitter">
+                            <span class="iconify" data-icon="ri:twitter-x-fill"></span>
+                        </div>
+                        <div>
+                            <div class="service-name">Twitter / X</div>
+                            <div class="service-desc">Followers • Likes</div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value"><span>10K+</span></div>
+                    <div class="stat-label">Orders Done</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <div class="stat-value"><span>5K+</span></div>
+                    <div class="stat-label">Happy Clients</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <div class="stat-value"><span>24/7</span></div>
+                    <div class="stat-label">Support</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <div class="stat-value"><span>Fast</span></div>
+                    <div class="stat-label">Delivery</div>
+                </div>
+            </div>
+
+            <!-- ✅ CTA MEIN BHI LINK HAI — YOUR_LINK replace karo apne Telegram bot link se -->
+            <a href="YOUR_LINK" target="_blank" class="cta-link">
+                <span class="iconify" data-icon="mdi:telegram"></span>
+                Start Now on Telegram
+            </a>
+        </div>
+
+        <div class="tagline">Powered by Dark otp • Trusted Service</div>
+    </div>
+
+    <script>
+        function downloadBanner() {
+            const banner = document.getElementById('banner');
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(banner, { scale: 2, backgroundColor: '#09090b', useCORS: true }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'blob:https://wevlo.pages.dev/baf58dc7-3805-472d-9350-7dfe0bc0babc';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            } else {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = function() {
+                    html2canvas(banner, { scale: 2, backgroundColor: '#09090b', useCORS: true }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = 'blob:https://chatgpt.com/cf90f343-6554-453d-98ac-fa4b69f1f6cd';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    });
+                };
+                document.head.appendChild(script);
+            }
+        }
+    </script>
+</body>
+</html>
